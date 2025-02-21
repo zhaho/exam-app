@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS questions (
 -- Create answers table
 CREATE TABLE IF NOT EXISTS answers (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    content VARCHAR(100) NOT NULL,
+    content VARCHAR(2048) NOT NULL,
     question_id INT NOT NULL,
     correct_answer BOOLEAN NOT NULL DEFAULT FALSE, -- Correct answer flag
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
