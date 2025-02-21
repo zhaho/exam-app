@@ -1,3 +1,5 @@
+version: '3.8'
+
 services:
   db:
     image: mysql:5.7
@@ -32,9 +34,9 @@ services:
       context: ./backend
     restart: always
     ports:
-      - 3000:3000
+      - "3000:3000"
     volumes:
-      - ./backend:/usr/src/app
+      - ./backend:/usr/src/app  # Mount the backend directory
     command: "node app.js"
     depends_on:
       - db

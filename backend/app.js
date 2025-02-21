@@ -1,7 +1,9 @@
 const express = require('express');
-const mysql = require('mysql2');
 const app = express();
+const mysql = require('mysql2');
 const port = 3000;
+
+app.use(express.json());
 
 const dbConfig = {
   host: 'db', // Docker service name of MySQL
@@ -30,6 +32,8 @@ const connectToDatabase = () => {
   });
 };
 
+
+
 // Start the Express server
 const startServer = () => {
   app.listen(port, () => {
@@ -40,7 +44,7 @@ const startServer = () => {
 // Check connection to MySQL
 connectToDatabase();
 
-
+// Endpoints
 
 app.get('/data', (req, res) => {
   const db = createDbConnection();
@@ -87,5 +91,84 @@ app.get('/data', (req, res) => {
       // Send the response with questions and answers
       res.json(questionsWithAnswers);
     });
+  });
+});
+
+app.post('/data', (req, res) => {
+  const db = createDbConnection();
+  const { exam, content, answers } = req.body;
+
+  // Ensure the required fields are present
+  if (!exam || !content || !answers || answers.length === 0) {
+    return res.status(400).json({ error: 'Missing required fields' });
+  }
+
+  // Insert the question into the questions table
+  const questionQuery = 'INSERT INTO questions (exam, content, correct_answer_id) VALUES (?, ?, ?)';
+  const correctAnswer = answers.find(answer => answer.correct); // Find the correct answer
+
+  if (!correctAnswer) {
+    return res.status(400).json({ error: 'No correct answer provided' });
+  }
+
+  db.query(questionQuery, [exam, content, null], function (err, result) {
+    if (err) {
+      res.status(500).json({ error: err.message });
+      return;
+    }
+
+    const questionId = result.insertId;
+
+    // Now insert the answers into the answers table
+    const answerQueries = answers.map(answer => {
+      return new Promise((resolve, reject) => {
+        const insertAnswerQuery = 'INSERT INTO answers (content, question_id) VALUES (?, ?)';
+        db.query(insertAnswerQuery, [answer.content, questionId], function (err, result) {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(result);
+          }
+        });
+      });
+    });
+
+    // Wait for all the answers to be inserted before setting the correct_answer_id
+    Promise.all(answerQueries)
+      .then(() => {
+        // Get the id of the correct answer from the answers table
+        const correctAnswerQuery = 'SELECT id FROM answers WHERE content = ? AND question_id = ? LIMIT 1';
+        db.query(correctAnswerQuery, [correctAnswer.content, questionId], function (err, results) {
+          if (err) {
+            res.status(500).json({ error: err.message });
+            return;
+          }
+
+          const correctAnswerId = results[0]?.id;
+
+          if (!correctAnswerId) {
+            res.status(500).json({ error: 'Unable to find correct answer ID' });
+            return;
+          }
+
+          // Update the question to set the correct_answer_id
+          const updateQuestionQuery = 'UPDATE questions SET correct_answer_id = ? WHERE id = ?';
+          db.query(updateQuestionQuery, [correctAnswerId, questionId], function (err) {
+            if (err) {
+              res.status(500).json({ error: err.message });
+              return;
+            }
+
+            // Send a response confirming success
+            res.status(201).json({
+              message: 'Question and answers successfully added',
+              question_id: questionId
+            });
+          });
+        });
+      })
+      .catch(err => {
+        res.status(500).json({ error: 'Error inserting answers', details: err.message });
+      });
   });
 });

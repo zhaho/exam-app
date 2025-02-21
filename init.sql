@@ -7,12 +7,13 @@ CREATE TABLE IF NOT EXISTS answers (
 
 CREATE TABLE IF NOT EXISTS questions (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    exam  VARCHAR(100) NOT NULL,
+    exam VARCHAR(100) NOT NULL,
     content VARCHAR(100) NOT NULL,
-    correct_answer_id INT NOT NULL UNIQUE,
+    correct_answer_id INT DEFAULT NULL, -- Make this column nullable and set default to NULL
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (correct_answer_id) REFERENCES answers(id) ON DELETE CASCADE
 );
+
 
 INSERT INTO answers (content, question_id) VALUES ('Answer 1',1);
 INSERT INTO answers (content, question_id) VALUES ('Answer 2',1);

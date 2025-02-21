@@ -1,2 +1,28 @@
+@hostname = localhost 
+@backend_port = 3000
 ###
-GET http://10.4.5.35:3000/data
+GET http://{{hostname}}:{{backend_port}}/data
+
+###
+POST http://{{hostname}}:{{backend_port}}/data
+Content-Type: application/json
+
+{
+  "exam": "SLY-N41",
+  "content": "What is the capital of Sweden?",
+  "answers": [
+    {
+      "content": "Stockholm",
+      "correct": true
+    },
+    {
+      "content": "Barcelona"
+    },
+    {
+      "content": "Madrid"
+    },
+    {
+      "content": "Helsinki"
+    }
+  ]
+}
