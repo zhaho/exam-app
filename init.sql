@@ -8,6 +8,7 @@ CREATE TABLE IF NOT EXISTS answers (
 CREATE TABLE IF NOT EXISTS questions (
     id INT AUTO_INCREMENT PRIMARY KEY,
     exam VARCHAR(100) NOT NULL,
+    question_number INT NOT NULL,
     content VARCHAR(100) NOT NULL,
     correct_answer_id INT DEFAULT NULL, -- Make this column nullable and set default to NULL
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -20,4 +21,4 @@ INSERT INTO answers (content, question_id) VALUES ('Answer 2',1);
 INSERT INTO answers (content, question_id) VALUES ('Answer 3',1);
 INSERT INTO answers (content, question_id) VALUES ('Answer 4',1);
 
-INSERT INTO questions (exam, content, correct_answer_id) VALUES ('WAP-ADO','What is the capital of France?', 1);
+INSERT INTO questions (exam, content, correct_answer_id, question_number) VALUES ('WAP-ADO','What is the capital of France?', 1, 999);
