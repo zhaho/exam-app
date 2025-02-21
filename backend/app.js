@@ -1,9 +1,12 @@
 const express = require('express');
+const cors = require("cors");
 const app = express();
 const mysql = require('mysql2');
 const port = 3000;
+require('dotenv').config();
 
 app.use(express.json());
+app.use(cors());
 
 const dbConfig = {
   host: 'db', // Docker service name of MySQL

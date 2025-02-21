@@ -1,36 +1,71 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 
-function FrontPage() {
-  const [searchTerm, setSearchTerm] = useState("");
+const App = () => {
+  const [data, setData] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filteredData, setFilteredData] = useState([]);
+  const apiUrl = import.meta.env.VITE_API_URL;
 
+  // Fetch data from the API
+  useEffect(() => {
+    axios.get(`${apiUrl}/data`)
+      .then((response) => {
+        setData(response.data);
+        setFilteredData(response.data);  // Initialize with all data
+      })
+      .catch((error) => {
+        console.error("There was an error fetching the data:", error);
+      });
+  }, []);
+
+  // Handle the search
   const handleSearch = () => {
-    alert(`Searching for: ${searchTerm}`);
+    if (searchQuery.trim() === "") {
+      setFilteredData(data);  // If search query is empty, show all data
+    } else {
+      const filtered = data.filter((item) =>
+        item.exam.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+      setFilteredData(filtered);
+    }
   };
 
   return (
-    <div className="flex h-screen items-center justify-center bg-gray-100">
-      <div className="w-full max-w-md p-6 bg-white rounded-2xl shadow-xl">
-        <h1 className="text-3xl font-bold text-center text-blue-600 mb-4">
-          Search Page
-        </h1>
-        <div className="flex space-x-2">
-          <input
-            type="text"
-            placeholder="Search..."
-            className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-          <button
-            onClick={handleSearch}
-            className="px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
-          >
-            Search
-          </button>
-        </div>
+    <div>
+      <h1>Exam Questions</h1>
+
+      {/* Search Bar */}
+      <div>
+        <input
+          type="text"
+          placeholder="Search for exam..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
+        <button onClick={handleSearch}>Search</button>
+      </div>
+
+      {/* Display filtered data */}
+      <div>
+        {filteredData.length === 0 ? (
+          <p>No exams found</p>
+        ) : (
+          filteredData.map((item) => (
+            <div key={item.id} style={{ marginBottom: "20px" }}>
+              <h2>{item.exam}</h2>
+              <p>{item.content}</p>
+              <ul>
+                {item.answers.map((answer) => (
+                  <li key={answer.id}>{answer.content}</li>
+                ))}
+              </ul>
+            </div>
+          ))
+        )}
       </div>
     </div>
   );
-}
+};
 
-export default FrontPage;
+export default App;

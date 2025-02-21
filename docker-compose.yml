@@ -45,6 +45,8 @@ services:
     build:
       context: ./frontend
     restart: always
+    environment:
+      - VITE_API_URL=${VITE_API_URL}
     volumes:
       - ./frontend:/app
     ports:
