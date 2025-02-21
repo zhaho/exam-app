@@ -2,7 +2,7 @@
 CREATE TABLE IF NOT EXISTS questions (
     id INT AUTO_INCREMENT PRIMARY KEY,
     exam VARCHAR(100) NOT NULL,
-    content VARCHAR(255) NOT NULL,
+    content VARCHAR(8192) NOT NULL,
     source VARCHAR(255) NULL, -- Optional source
     question_number INT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
