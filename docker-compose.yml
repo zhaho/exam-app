@@ -1,0 +1,40 @@
+services:
+  db:
+    image: mysql:5.7
+    container_name: mysql_db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: exam_db
+      MYSQL_USER: exam_user
+      MYSQL_PASSWORD: exam_password
+    ports:
+      - "3306:3306"
+    command: ["--datadir", "/mysql_data"]
+    volumes:
+      - ./mysql_data:/mysql_data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin
+    restart: always
+    environment:
+      PMA_HOST: db
+      MYSQL_ROOT_PASSWORD: rootpassword
+    ports:
+      - "8081:80"
+    depends_on:
+      - db
+
+  backend:
+    build:
+      context: ./backend
+    restart: always
+    ports:
+      - 3000:3000
+    volumes:
+      - ./backend:/usr/src/app
+    command: "node app.js"
+    depends_on:
+      - db
