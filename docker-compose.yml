@@ -34,9 +34,18 @@ services:
       context: ./backend
     restart: always
     ports:
-      - "3000:3000"
+      - "8888:3000"
     volumes:
       - ./backend:/usr/src/app  # Mount the backend directory
     command: "node app.js"
     depends_on:
       - db
+
+  frontend:
+    build:
+      context: ./frontend
+    restart: always
+    volumes:
+      - ./frontend:/app
+    ports:
+      - "5173:5173"

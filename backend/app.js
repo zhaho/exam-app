@@ -71,6 +71,7 @@ app.get('/data', (req, res) => {
         acc[answer.question_id].push({
           id: answer.id,
           content: answer.content,
+          correct_answer: answer.correct_answer,
           created_at: answer.created_at
         });
         return acc;
@@ -82,7 +83,8 @@ app.get('/data', (req, res) => {
           id: question.id,
           exam: question.exam,
           content: question.content,
-          correct_answer_id: question.correct_answer_id,
+          source: question.source,
+          question_number: question.question_number,
           created_at: question.created_at,
           answers: answersMap[question.id] || [] // Attach answers if available
         };
@@ -96,7 +98,7 @@ app.get('/data', (req, res) => {
 
 app.post('/data', (req, res) => {
   const db = createDbConnection();
-  const { exam, content, answers } = req.body;
+  const { exam, content, answers, question_number } = req.body;
 
   // Ensure the required fields are present
   if (!exam || !content || !answers || answers.length === 0) {
@@ -104,14 +106,9 @@ app.post('/data', (req, res) => {
   }
 
   // Insert the question into the questions table
-  const questionQuery = 'INSERT INTO questions (exam, content, correct_answer_id) VALUES (?, ?, ?)';
-  const correctAnswer = answers.find(answer => answer.correct); // Find the correct answer
-
-  if (!correctAnswer) {
-    return res.status(400).json({ error: 'No correct answer provided' });
-  }
-
-  db.query(questionQuery, [exam, content, null], function (err, result) {
+  const questionQuery = 'INSERT INTO questions (exam, content, question_number) VALUES (?, ?, ?)';
+  
+  db.query(questionQuery, [exam, content, question_number], function (err, result) {
     if (err) {
       res.status(500).json({ error: err.message });
       return;
@@ -119,11 +116,12 @@ app.post('/data', (req, res) => {
 
     const questionId = result.insertId;
 
-    // Now insert the answers into the answers table
+    // Now insert the answers into the answers table, including the correct_answer field
     const answerQueries = answers.map(answer => {
       return new Promise((resolve, reject) => {
-        const insertAnswerQuery = 'INSERT INTO answers (content, question_id) VALUES (?, ?)';
-        db.query(insertAnswerQuery, [answer.content, questionId], function (err, result) {
+        const insertAnswerQuery = 'INSERT INTO answers (content, question_id, correct_answer) VALUES (?, ?, ?)';
+        const correctAnswerValue = answer.correct_answer === true;  // Ensure it inserts as boolean TRUE or FALSE
+        db.query(insertAnswerQuery, [answer.content, questionId, correctAnswerValue], function (err, result) {
           if (err) {
             reject(err);
           } else {
@@ -133,38 +131,13 @@ app.post('/data', (req, res) => {
       });
     });
 
-    // Wait for all the answers to be inserted before setting the correct_answer_id
+    // Wait for all the answers to be inserted
     Promise.all(answerQueries)
       .then(() => {
-        // Get the id of the correct answer from the answers table
-        const correctAnswerQuery = 'SELECT id FROM answers WHERE content = ? AND question_id = ? LIMIT 1';
-        db.query(correctAnswerQuery, [correctAnswer.content, questionId], function (err, results) {
-          if (err) {
-            res.status(500).json({ error: err.message });
-            return;
-          }
-
-          const correctAnswerId = results[0]?.id;
-
-          if (!correctAnswerId) {
-            res.status(500).json({ error: 'Unable to find correct answer ID' });
-            return;
-          }
-
-          // Update the question to set the correct_answer_id
-          const updateQuestionQuery = 'UPDATE questions SET correct_answer_id = ? WHERE id = ?';
-          db.query(updateQuestionQuery, [correctAnswerId, questionId], function (err) {
-            if (err) {
-              res.status(500).json({ error: err.message });
-              return;
-            }
-
-            // Send a response confirming success
-            res.status(201).json({
-              message: 'Question and answers successfully added',
-              question_id: questionId
-            });
-          });
+        // Send a response confirming success
+        res.status(201).json({
+          message: 'Question and answers successfully added',
+          question_id: questionId
         });
       })
       .catch(err => {
@@ -172,3 +145,4 @@ app.post('/data', (req, res) => {
       });
   });
 });
+

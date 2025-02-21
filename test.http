@@ -1,5 +1,5 @@
 @hostname = localhost 
-@backend_port = 3000
+@backend_port = 8888
 ###
 GET http://{{hostname}}:{{backend_port}}/data
 
@@ -10,16 +10,19 @@ Content-Type: application/json
 {
   "exam": "SLY-N41",
   "content": "What is the capital of Sweden?",
+  "source": "",
+  "question_number": 998,
   "answers": [
     {
       "content": "Stockholm",
-      "correct": true
+      "correct_answer": true
     },
     {
       "content": "Barcelona"
     },
     {
-      "content": "Madrid"
+      "content": "Madrid",
+       "correct_answer": true
     },
     {
       "content": "Helsinki"
