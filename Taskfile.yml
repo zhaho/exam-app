@@ -14,3 +14,13 @@ tasks:
     dir: '{{.USER_WORKING_DIR}}'
     cmds:
       - sudo docker-compose down
+
+  clean-db:
+    dir: '{{.USER_WORKING_DIR}}'
+    cmds:
+      - sudo rm -rf mysql_data/
+
+  logs:
+    dir: '{{.USER_WORKING_DIR}}'
+    cmds:
+      - sudo docker-compose logs -f
