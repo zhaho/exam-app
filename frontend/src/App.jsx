@@ -120,8 +120,9 @@ const App = () => {
               {examData.questions.map((question) => (
                 <div key={question.id} className="p-4 border-b border-gray-300">
                   {/* Question */}
-                  <h3 className="text-xl font-semibold">{question.content}</h3>
-                  <p className="text-sm text-gray-500">Source: {question.source}</p>
+                  <h3 className="text-xl font-semibold text-gray-400">Question {question.question_number}</h3>
+                  <h3 className="mb-4 font-semibold">{question.content}</h3>
+                  {/* <p className="text-sm text-gray-500">Source: {question.source}</p> */}
 
                   {/* Answers */}
                   <ul className="list-disc pl-5 space-y-2 mt-2">
