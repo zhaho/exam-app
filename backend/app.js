@@ -9,10 +9,10 @@ app.use(express.json());
 app.use(cors());
 
 const dbConfig = {
-  host: 'db', 
-  user: 'exam_user',
-  password: 'exam_password',
-  database: 'exam_db'
+  host: process.env.MYSQL_HOST, 
+  user: process.env.MYSQL_USER,
+  password: process.env.MYSQL_PASSWORD,
+  database: process.env.MYSQL_DATABASE
 };
 
 const createDbConnection = () => {

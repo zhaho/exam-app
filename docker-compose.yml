@@ -6,10 +6,10 @@ services:
     container_name: mysql_db
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: rootpassword
-      MYSQL_DATABASE: exam_db
-      MYSQL_USER: exam_user
-      MYSQL_PASSWORD: exam_password
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     ports:
       - "3306:3306"
     command: ["--datadir", "/mysql_data"]
@@ -22,8 +22,8 @@ services:
     container_name: phpmyadmin
     restart: always
     environment:
-      PMA_HOST: db
-      MYSQL_ROOT_PASSWORD: rootpassword
+      PMA_HOST: ${MYSQL_HOST}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
     ports:
       - "8081:80"
     depends_on:
@@ -33,10 +33,15 @@ services:
     build:
       context: ./backend
     restart: always
+    environment:
+      MYSQL_HOST: ${MYSQL_HOST}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     ports:
       - "8888:3000"
     volumes:
-      - ./backend:/usr/src/app  # Mount the backend directory
+      - ./backend:/usr/src/app
     command: "node app.js"
     depends_on:
       - db
