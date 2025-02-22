@@ -2,12 +2,14 @@ import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBook } from "@fortawesome/free-solid-svg-icons";
+import ButtonCopyToRemNote from "./components/ButtonCopyToRemNote";
 
 const App = () => {
   const [examData, setExamData] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const apiUrl = import.meta.env.VITE_API_URL;
   const inputRef = useRef(null); // Create a ref for the input field
+  const textToCopy = "This is the text to copy to clipboard.";
 
   useEffect(() => {
     inputRef.current?.focus(); // Auto-focus input on mount
@@ -71,7 +73,7 @@ const App = () => {
           />
           <button
             onClick={handleSearch}
-            className="ml-4 px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition"
+            className="ml-4 flex items-center gap-2 px-4 py-2 bg-purple-600 text-white font-medium rounded-lg shadow-sm hover:bg-purple-700 transition-all duration-300"
           >
             Search
           </button>
@@ -80,11 +82,11 @@ const App = () => {
         {/* Display Exam Data */}
         {examData ? (
           <div className="bg-white text-gray-800 rounded-lg p-6 shadow-lg hover:shadow-xl transition duration-300">
+            <ButtonCopyToRemNote copyText={textToCopy} buttonText="RemNote" />
             {/* Exam Title */}
             <h2 className="text-3xl font-bold text-center text-purple-700 mb-4">
               Exam: {examData.exam}
             </h2>
-
             {/* Questions & Answers */}
             <div className="space-y-6">
               {examData.questions.map((question) => (
