@@ -4,7 +4,7 @@
 GET http://{{hostname}}:{{backend_port}}/data
 
 ### 
-GET http://{{hostname}}:{{backend_port}}/exams
+GET http://{{hostname}}:{{backend_port}}/exams?exam=SLY-N41
 
 
 ###
