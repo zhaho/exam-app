@@ -149,7 +149,7 @@ app.get('/exams', (req, res) => {
 
   const db = createDbConnection();
 
-  db.query('SELECT * FROM questions WHERE exam = ?', [exam], (err, questions) => {
+  db.query('SELECT * FROM questions WHERE exam = ? ORDER BY question_number ASC', [exam], (err, questions) => {
     if (err) {
       res.status(500).json({ error: err.message });
       return;
