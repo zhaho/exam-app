@@ -149,3 +149,63 @@ app.post('/data', (req, res) => {
   });
 });
 
+app.get('/exams', (req, res) => {
+  const exam = req.query.exam; // Get the exam code from the query string
+  if (!exam) {
+    return res.status(400).json({ error: "Exam code is required" });
+  }
+
+  const db = createDbConnection();
+
+  // Fetch questions for the specific exam
+  db.query('SELECT * FROM questions WHERE exam = ?', [exam], (err, questions) => {
+    if (err) {
+      res.status(500).json({ error: err.message });
+      return;
+    }
+
+    if (questions.length === 0) {
+      return res.status(404).json({ error: `No questions found for exam ${exam}` });
+    }
+
+    // Fetch answers for the specific questions in that exam
+    db.query('SELECT * FROM answers WHERE question_id IN (?)', [questions.map(q => q.id)], (err, answers) => {
+      if (err) {
+        res.status(500).json({ error: err.message });
+        return;
+      }
+
+      // Map answers by question_id for easy lookup
+      const answersMap = answers.reduce((acc, answer) => {
+        if (!acc[answer.question_id]) {
+          acc[answer.question_id] = [];
+        }
+        acc[answer.question_id].push({
+          id: answer.id,
+          content: answer.content,
+          correct_answer: answer.correct_answer,
+          created_at: answer.created_at
+        });
+        return acc;
+      }, {});
+
+      // Group questions by exam and include their respective answers
+      const examData = {
+        exam: exam,
+        questions: questions.map(question => {
+          return {
+            id: question.id,
+            content: question.content,
+            source: question.source,
+            question_number: question.question_number,
+            created_at: question.created_at,
+            answers: answersMap[question.id] || [] // Attach answers if available
+          };
+        })
+      };
+
+      // Send the response with the exam and its grouped questions and answers
+      res.json(examData);
+    });
+  });
+});

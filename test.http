@@ -3,6 +3,10 @@
 ###
 GET http://{{hostname}}:{{backend_port}}/data
 
+### 
+GET http://{{hostname}}:{{backend_port}}/exams
+
+
 ###
 POST http://{{hostname}}:{{backend_port}}/data
 Content-Type: application/json
