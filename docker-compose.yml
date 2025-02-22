@@ -52,6 +52,7 @@ services:
     restart: always
     environment:
       - VITE_API_URL=${VITE_API_URL}
+      - VITE_API_PORT=${VITE_API_PORT}
     volumes:
       - ./frontend:/app
     ports:

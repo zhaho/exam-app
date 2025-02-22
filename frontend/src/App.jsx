@@ -7,7 +7,7 @@ import ButtonCopyToRemNote from "./components/ButtonCopyToRemNote";
 const App = () => {
   const [examData, setExamData] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
-  const apiUrl = import.meta.env.VITE_API_URL;
+  const apiUrl = import.meta.env.VITE_API_URL +":"+import.meta.env.VITE_API_PORT;
   const inputRef = useRef(null); // Create a ref for the input field
   const textToCopy = "This is the text to copy to clipboard.";
 

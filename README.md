@@ -9,6 +9,7 @@
 Create .env file in root directory, and set them as desired.
 ```bash
 VITE_API_URL=
+VITE_API_PORT=
 MYSQL_ROOT_PASSWORD=
 MYSQL_DATABASE=
 MYSQL_USER=
