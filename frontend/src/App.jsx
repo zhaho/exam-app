@@ -1,12 +1,17 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBook } from "@fortawesome/free-solid-svg-icons";
 
 const App = () => {
-  const [examData, setExamData] = useState(null); // Store full exam data
+  const [examData, setExamData] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const apiUrl = import.meta.env.VITE_API_URL;
+  const inputRef = useRef(null); // Create a ref for the input field
+
+  useEffect(() => {
+    inputRef.current?.focus(); // Auto-focus input on mount
+  }, []);
 
   const fetchData = async (query) => {
     if (!query) {
@@ -21,7 +26,7 @@ const App = () => {
       });
 
       if (response.data && response.data.questions) {
-        setExamData(response.data); // Store full exam response
+        setExamData(response.data);
       } else {
         setExamData(null);
       }
@@ -33,6 +38,12 @@ const App = () => {
 
   const handleSearch = () => {
     fetchData(searchQuery.trim());
+  };
+
+  const handleKeyDown = (event) => {
+    if (event.key === "Enter") {
+      handleSearch();
+    }
   };
 
   return (
@@ -50,10 +61,12 @@ const App = () => {
         {/* Search Bar */}
         <div className="max-w-md mx-auto flex items-center bg-white p-4 rounded-xl shadow-lg mb-8">
           <input
+            ref={inputRef}
             type="text"
             placeholder="Enter exam code..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
+            onKeyDown={handleKeyDown} // Listen for Enter key press
             className="flex-grow p-2 text-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
           />
           <button
