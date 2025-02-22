@@ -7,12 +7,14 @@ import ButtonCopyToRemNote from "./components/ButtonCopyToRemNote";
 const App = () => {
   const [examData, setExamData] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
-  const apiUrl = import.meta.env.VITE_API_URL +":"+import.meta.env.VITE_API_PORT;
-  const inputRef = useRef(null); // Create a ref for the input field
-  const textToCopy = "This is the text to copy to clipboard.";
+  const apiUrl = import.meta.env.VITE_API_URL + ":" + import.meta.env.VITE_API_PORT;
+  const inputRef = useRef(null);
+
+  // Updated textToCopy
+  const [textToCopy, setTextToCopy] = useState("");
 
   useEffect(() => {
-    inputRef.current?.focus(); // Auto-focus input on mount
+    inputRef.current?.focus();
   }, []);
 
   const fetchData = async (query) => {
@@ -29,6 +31,7 @@ const App = () => {
 
       if (response.data && response.data.questions) {
         setExamData(response.data);
+        formatTextToCopy(response.data);
       } else {
         setExamData(null);
       }
@@ -48,9 +51,34 @@ const App = () => {
     }
   };
 
+  const formatTextToCopy = (data) => {
+    let formattedText = "";
+
+    data.questions.forEach((question, index) => {
+      // Question
+      formattedText += `Question ${question.question_number} :\n\t${question.content} >>A)\n`;
+
+      // Answers
+      question.answers.forEach((answer) => {
+        formattedText += `\t\t${answer.content}\n`;
+      });
+
+      // Add a line break between questions
+      formattedText += "\n";
+    });
+
+    setTextToCopy(formattedText);
+  };
+
   return (
-    <div className="min-h-screen bg-gradient-to-r from-black to-purple-900 text-white">
-      <div className="container mx-auto px-6 py-12">
+    <div className="relative min-h-screen bg-gradient-to-r from-black to-purple-900 text-white">
+      {/* Faint Book Icon in the Top-Right Corner */}
+      <FontAwesomeIcon
+        icon={faBook}
+        className="absolute text-[300px] text-white opacity-10 rotate-[15deg] top-[-50px] right-[-50px] -z-10"
+      />
+
+      <div className="container mx-auto px-6 py-12 relative z-10">
         {/* Title with bouncing book icon */}
         <div className="flex items-center justify-center mb-8">
           <FontAwesomeIcon
@@ -68,7 +96,7 @@ const App = () => {
             placeholder="Enter exam code..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            onKeyDown={handleKeyDown} // Listen for Enter key press
+            onKeyDown={handleKeyDown}
             className="flex-grow p-2 text-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
           />
           <button
