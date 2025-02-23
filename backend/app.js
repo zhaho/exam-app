@@ -98,15 +98,15 @@ app.get('/data', (req, res) => {
 
 app.post('/data', (req, res) => {
   const db = createDbConnection();
-  const { exam, content, answers, question_number } = req.body;
+  const { exam, content, answers, question_number, source } = req.body;
 
-  if (!exam || !content || !answers || answers.length === 0) {
+  if (!exam || !content || !answers || !source || answers.length === 0) {
     return res.status(400).json({ error: 'Missing required fields' });
   }
 
-  const questionQuery = 'INSERT INTO questions (exam, content, question_number) VALUES (?, ?, ?)';
+  const questionQuery = 'INSERT INTO questions (exam, content, question_number, source) VALUES (?, ?, ?, ?)';
   
-  db.query(questionQuery, [exam, content, question_number], function (err, result) {
+  db.query(questionQuery, [exam, content, question_number, source], function (err, result) {
     if (err) {
       res.status(500).json({ error: err.message });
       return;
