@@ -1,5 +1,6 @@
 import time
 import logging
+import scraper
 from dotenv import load_dotenv
 
 # Load Environment Variables
@@ -17,5 +18,6 @@ logger.info('Script is running')
 
 while True:
     logger.info("Scraping Scraping!")
+    scraper.scraper()
     logger.warning("Waiting for better days...")
     time.sleep(30)  
