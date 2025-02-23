@@ -56,3 +56,10 @@ services:
       - /app/node_modules
     ports:
       - "5173:5173"
+
+  scraper:
+    build:
+      context: ./scraper
+    restart: always
+    command: python main.py
+    
