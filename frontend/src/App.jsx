@@ -113,7 +113,7 @@ const App = () => {
         </div>
 
         {/* Display Exam Data */}
-        {examData ? (
+        {examData && (
           <div className="bg-white text-gray-800 rounded-lg p-6 shadow-lg hover:shadow-xl transition duration-300">
             <ButtonCopyToRemNote copyText={textToCopy} buttonText="RemNote" />
             {/* Exam Title */}
@@ -162,8 +162,6 @@ const App = () => {
               ))}
             </div>
           </div>
-        ) : (
-          <p className="text-center text-xl">No exam data available</p>
         )}
       </div>
     </div>
