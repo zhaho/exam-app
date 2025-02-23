@@ -18,6 +18,14 @@ CREATE TABLE IF NOT EXISTS answers (
     FOREIGN KEY (question_id) REFERENCES questions(id) ON DELETE CASCADE
 );
 
+-- Create images table
+CREATE TABLE IF NOT EXISTS images (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    image_url VARCHAR(1024) NOT NULL,
+    question_id INT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 -- Insert into questions first
 INSERT INTO questions (exam, content, question_number) 
 VALUES ('WAP-ADO', 'What is the capital of France?', 999);
@@ -30,3 +38,5 @@ INSERT INTO answers (content, question_id, correct_answer) VALUES ('Answer 1', @
 INSERT INTO answers (content, question_id, correct_answer) VALUES ('Answer 2', @question_id, TRUE); -- Correct answer
 INSERT INTO answers (content, question_id, correct_answer) VALUES ('Answer 3', @question_id, FALSE);
 INSERT INTO answers (content, question_id, correct_answer) VALUES ('Answer 4', @question_id, FALSE);
+
+INSERT INTO images (image_url, question_id) VALUES ('https://img.examtopics.com/sy0-701/image39.png', @question_id);

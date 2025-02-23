@@ -16,6 +16,11 @@ Content-Type: application/json
   "content": "What is the capital of Sweden?",
   "source": "",
   "question_number": 998,
+  "images": [
+    {
+      "image_url": "https://img.examtopics.com/sy0-701/image39.png"
+    }
+  ],
   "answers": [
     {
       "content": "Stockholm",
