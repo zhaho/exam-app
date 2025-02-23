@@ -14,9 +14,16 @@ Content-Type: application/json
 {
   "exam": "SLY-N41",
   "content": "What is the capital of Sweden?",
-  "source": "wappadou",
+  "source": "https://gathering.kennethros.se",
   "question_number": 998,
-
+  "images": [
+    {
+      "image_url": "https://img.examtopics.com/sy0-701/image39.png"
+    },
+    {
+      "image_url": "https://img.examtopics.com/sy0-701/image40.png"
+    }
+  ],
   "answers": [
     {
       "content": "Stockholm",

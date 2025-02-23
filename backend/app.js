@@ -98,48 +98,65 @@ app.get('/data', (req, res) => {
 
 app.post('/data', (req, res) => {
   const db = createDbConnection();
-  const { exam, content, answers, question_number, source } = req.body;
+  const { exam, content, source, question_number, images = [], answers = [] } = req.body;
 
-  if (!exam || !content || !answers || !source || answers.length === 0) {
-    return res.status(400).json({ error: 'Missing required fields' });
+  // Check required fields
+  if (!exam || !content) {
+    return res.status(400).json({ error: 'Missing required fields: exam or content' });
+  }
+
+  // If source is not defined, or is set to empty value
+  if (source !== undefined && source.trim() === "") {
+    return res.status(400).json({ error: 'Source cannot be an empty string' });
   }
 
   const questionQuery = 'INSERT INTO questions (exam, content, question_number, source) VALUES (?, ?, ?, ?)';
-  
+
   db.query(questionQuery, [exam, content, question_number, source], function (err, result) {
     if (err) {
-      res.status(500).json({ error: err.message });
-      return;
+      return res.status(500).json({ error: 'Database error inserting question', details: err.message });
     }
 
-    const questionId = result.insertId;
+    const questionId = result.insertId; // Get newly inserted question ID
 
-    const answerQueries = answers.map(answer => {
+    // Insert answers (if any)
+    const insertAnswers = answers.map(answer => {
       return new Promise((resolve, reject) => {
-        const insertAnswerQuery = 'INSERT INTO answers (content, question_id, correct_answer) VALUES (?, ?, ?)';
-        const correctAnswerValue = answer.correct_answer === true;  // Ensure it inserts as boolean TRUE or FALSE
-        db.query(insertAnswerQuery, [answer.content, questionId, correctAnswerValue], function (err, result) {
-          if (err) {
-            reject(err);
-          } else {
-            resolve(result);
-          }
+        const answerQuery = 'INSERT INTO answers (content, question_id, correct_answer) VALUES (?, ?, ?)';
+        const correctAnswerValue = answer.correct_answer === true; // Ensure correct_answer is boolean
+        db.query(answerQuery, [answer.content, questionId, correctAnswerValue], function (err, result) {
+          if (err) reject(err);
+          else resolve(result);
         });
       });
     });
 
-    Promise.all(answerQueries)
+    // Insert images (if any)
+    const insertImages = images.map(image => {
+      return new Promise((resolve, reject) => {
+        if (!image.image_url) return resolve(); // Skip if image_url is missing
+        const imageQuery = 'INSERT INTO images (image_url, question_id) VALUES (?, ?)';
+        db.query(imageQuery, [image.image_url, questionId], function (err, result) {
+          if (err) reject(err);
+          else resolve(result);
+        });
+      });
+    });
+
+    // Execute all insert queries
+    Promise.all([...insertAnswers, ...insertImages])
       .then(() => {
         res.status(201).json({
-          message: 'Question and answers successfully added',
+          message: 'Question, answers, and images successfully added',
           question_id: questionId
         });
       })
       .catch(err => {
-        res.status(500).json({ error: 'Error inserting answers', details: err.message });
+        res.status(500).json({ error: 'Error inserting answers or images', details: err.message });
       });
   });
 });
+
 
 app.get('/exams', (req, res) => {
   const exam = req.query.exam; 
