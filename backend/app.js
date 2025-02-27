@@ -50,7 +50,7 @@ connectToDatabase();
 app.get('/data', (req, res) => {
   const db = createDbConnection();
 
-  db.query('SELECT * FROM questions', (err, questions) => {
+  db.query('SELECT * FROM questions ORDER BY question_number ASC', (err, questions) => {
     if (err) {
       res.status(500).json({ error: err.message });
       return;
