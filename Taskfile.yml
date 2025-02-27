@@ -9,6 +9,7 @@ tasks:
       - sudo docker-compose down
       - echo "Done. Bringing up containers..."
       - sudo docker-compose up -d --build
+      - cd /home/fredrik/portainer && sudo docker-compose up -d
 
   down:
     dir: '{{.USER_WORKING_DIR}}'
