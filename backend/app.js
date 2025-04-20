@@ -153,6 +153,10 @@ app.post('/data', (req, res) => {
       })
       .catch(err => {
         res.status(500).json({ error: 'Error inserting answers or images', details: err.message });
+      })
+      .finally(() => {
+      // Stänger anslutningen oavsett resultat
+      db.end();
       });
   });
 });
