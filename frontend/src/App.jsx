@@ -56,7 +56,7 @@ const App = () => {
 
     data.questions.forEach((question, index) => {
       // Question
-      formattedText += `Question ${question.question_number} :\n\t${question.content.replace(/\n/g, "  \n\t")} >>A)\n`;
+      formattedText += `Question ${question.question_number} :\n\t${question.source}\n\t${question.content.replace(/\n/g, "  \n\t")} >>A)\n`;
 
       // Answers
       question.answers.forEach((answer) => {

@@ -31,4 +31,3 @@ tasks:
       - git pull
       - task: up
 
-      

@@ -9,7 +9,7 @@ services:
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     ports:
-      - "3306:3306"
+      - "4190:3306"
     command: ["--datadir", "/mysql_data"]
     volumes:
       - ./mysql_data:/mysql_data
